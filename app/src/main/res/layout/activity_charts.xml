@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/infoView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+    </View>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvCharts"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/infoView">
+    </android.support.v7.widget.RecyclerView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/infoView"
+        android:gravity="center">
+
+        <View
+            android:layout_marginLeft="20dp"
+            android:id="@+id/columnGrey"
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:background="#1a000000"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/infoView"
+        android:background="#1a000000"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:id="@+id/textView"
+        android:layout_alignBottom="@+id/infoView"
+        android:layout_centerHorizontal="true"/>
+
+
+</RelativeLayout>
