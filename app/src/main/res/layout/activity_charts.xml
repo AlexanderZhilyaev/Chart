@@ -13,7 +13,8 @@
         android:id="@+id/rvCharts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/infoView">
+        android:layout_below="@+id/infoView"
+        >
     </android.support.v7.widget.RecyclerView>
 
 
@@ -24,12 +25,19 @@
         android:gravity="center">
 
         <View
-            android:layout_marginLeft="20dp"
             android:id="@+id/columnGrey"
             android:layout_width="20dp"
             android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
             android:background="#1a000000"/>
     </LinearLayout>
+
+
+    <include layout="@layout/item_up_line"/>
+    <include layout="@layout/item_line_midle"/>
+    <include layout="@layout/item_line_down"/>
+
+
 
     <View
         android:layout_width="match_parent"
@@ -38,12 +46,13 @@
         android:background="#1a000000"/>
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:id="@+id/textView"
         android:layout_alignBottom="@+id/infoView"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 
 
 </RelativeLayout>

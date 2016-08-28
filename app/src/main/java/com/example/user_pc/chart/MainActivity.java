@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -24,16 +25,20 @@ public class MainActivity extends AppCompatActivity {
     public static TextView mTextView;
     public static RecyclerView rvCharts;
     public static View minfo;
+    public View greyColumn;
     ArrayList<Chart> charts;
-    private final static int MAX_RANDOM_VALUE = 1001;
+    private final static int MAX_RANDOM_VALUE = 1000;
     private final static int COLUMN = 20000;
+    private final static int COLUMN_WIDTH = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_charts);
         rvCharts = (RecyclerView) findViewById(R.id.rvCharts);
-        minfo = (View) findViewById(R.id.infoView);
+        minfo = findViewById(R.id.infoView);
+        greyColumn = findViewById(R.id.columnGrey);
+
 
         rvCharts.setHasFixedSize(true);
 
@@ -44,111 +49,96 @@ public class MainActivity extends AppCompatActivity {
         ChartsAdapter adapter = new ChartsAdapter(this, charts);
 
 
-//        rvCharts.addOnItemTouchListener((new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(View view, int position) {
-//                Log.e("CLICK", position + "");
-//                rvCharts.smoothScrollToPosition(position);
-//            }
-//        })));
+        rvCharts.setAdapter(adapter);
+        rvCharts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        rvCharts.canScrollHorizontally(0);
 
 
+        scrollingChart();
+        clickOfColumn();
+
+    }
+
+    public void scrollingChart() {
         rvCharts.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 int visibleItem = 0;
-                Log.e("dx = " , dx + "");
-                if(dx == 0){
-                    Log.e("dx= ", dx + "");
-                    visibleItem = ((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition();
-                }
-                if (dx >= 1) {
-                    visibleItem = ((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition();
-                } else {
-                    visibleItem = ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition();
-                }
-                int centrPos = 1 + (((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition() -
-                        ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition()) / 2;
+                if (newState == 0) {
 
-                Chart chart = charts.get(((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition() + centrPos);
-                mTextView.setText(String.valueOf(chart.getValue()));
-                rvCharts.smoothScrollToPosition(visibleItem);
+                    float a = recyclerView.getLayoutManager().
+                            findViewByPosition(((LinearLayoutManager) rvCharts.getLayoutManager()).
+                                    findFirstVisibleItemPosition()).
+                            getX();
+
+                    if (a <= -COLUMN_WIDTH || a == 0) {
+                        visibleItem = getLastVisibliPosition();
+                    } else {
+                        visibleItem = getFirstVisbliPosition();
+                    }
+                   // int centrPos = 1 + (((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition() -
+//                            ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition()) / 2;
+
+
+                    rvCharts.smoothScrollToPosition(visibleItem);
+
+
+                    //Chart chart = charts.get(((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition() + centrPos);
+                    Chart chart = charts.get(getNextMidPositionVisible());
+                    mTextView.setText(String.valueOf(chart.getValue()));
+                }
             }
         });
+    }
 
-
+    public void clickOfColumn() {
         rvCharts.addOnItemTouchListener(new RecyclerItemClickListener(rvCharts.getContext(), rvCharts, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        // do whatever
                         Chart chart = charts.get(position);
-                        mTextView.setText(String.valueOf(chart.getValue()));
-                        rvCharts.getChildCount();
-                        int firstPosition = ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition();
-                        int lastPosition = ((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition();
-                        int centrPosition = 1 + (lastPosition - firstPosition) / 2;
-                        int centrChart = centrPosition + ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition();
-                        int result = position - centrChart;
+                        //int lastPosition = ((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition();
+                        //int centrPosition = 1 + (getLastVisibliPosition() - getFirstVisbliPosition()) / 2;
+                        //getMidPositionVisible();
+                        //int centrChart = centrPosition + ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition();
 
-                        if (centrChart > position) {
-                            int nextPosition = firstPosition + result;
-                            rvCharts.smoothScrollToPosition(nextPosition);
-                        } else {
-                            int nextPosition = firstPosition + result;
-                            rvCharts.smoothScrollToPosition(nextPosition);
+
+                        int shift = position - getNextMidPositionVisible();
+
+
+                        if (position > getMidPositionVisible() - 1) {
+                            mTextView.setText(String.valueOf(chart.getValue()));
+
+                            if (getNextMidPositionVisible() > position) {
+                                int nextPosition = getFirstVisbliPosition() + shift;
+                                rvCharts.smoothScrollToPosition(nextPosition);
+                            }
+                            else {
+                                int nextPosition = getLastVisibliPosition() + shift;
+                                rvCharts.smoothScrollToPosition(nextPosition);
+                            }
                         }
-
-
                     }
 
                     @Override
                     public void onLongItemClick(View view, int position) {
-                        // do whatever
                     }
                 })
         );
-
-        rvCharts.setAdapter(adapter);
-        rvCharts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
     }
 
-//    public static class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
-//        private OnItemClickListener mListener;
-//
-//        public interface OnItemClickListener {
-//            void onItemClick(View view, int position);
-//        }
-//
-//        GestureDetector mGestureDetector;
-//
-//        public RecyclerItemClickListener(Context context, OnItemClickListener listener) {
-//            mListener = listener;
-//            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-//                @Override
-//                public boolean onSingleTapUp(MotionEvent e) {
-//                    return true;
-//                }
-//            });
-//        }
-//
-//        @Override
-//        public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
-//            View childView = view.findChildViewUnder(e.getX(), e.getY());
-//            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
-//                mListener.onItemClick(childView, view.getChildAdapterPosition(childView));
-//            }
-//            return false;
-//        }
-//
-//        @Override
-//        public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) {
-//        }
-//
-//        @Override
-//        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//
-//        }
-//    }
+    public int getFirstVisbliPosition() {
+        return ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition();
+    }
+
+    public int getLastVisibliPosition() {
+        return ((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition();
+    }
+
+    public int getMidPositionVisible() {
+        return 1 + (getLastVisibliPosition() - getFirstVisbliPosition()) / 2;
+    }
+
+    public int getNextMidPositionVisible() {
+        return getMidPositionVisible() + getFirstVisbliPosition();
+    }
+
 }

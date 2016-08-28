@@ -48,8 +48,14 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
 
         View mView = holder.mViewColumnWhite;
 
+        if(position <= 8){
+            mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
+                    RecyclerView.LayoutParams.WRAP_CONTENT, 0));
+            mView.setClickable(false);
+        }else{
         mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
                 RecyclerView.LayoutParams.WRAP_CONTENT, chart.getValue()));
+        }
     }
 
     @Override
