@@ -25,6 +25,9 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
         this.charts = charts;
         this.context = context;
     }
+
+
+
     private Context getContext(){
         return context;
     }
@@ -64,8 +67,10 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
     }
 
 
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         public View mViewColumnWhite;
+        public LinearLayout mLinearLayout;
         public ViewHolder(View itemView){
             super(itemView);
             mViewColumnWhite =  itemView.findViewById(R.id.columnWhite);
