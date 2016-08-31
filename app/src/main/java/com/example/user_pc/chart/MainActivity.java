@@ -2,6 +2,7 @@ package com.example.user_pc.chart;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Build;
 import android.provider.ContactsContract;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         rvCharts = (RecyclerView) findViewById(R.id.rvCharts);
         minfo = findViewById(R.id.infoView);
         greyColumn = findViewById(R.id.columnGrey);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_BEHIND);
 
 
         rvCharts.setHasFixedSize(true);
