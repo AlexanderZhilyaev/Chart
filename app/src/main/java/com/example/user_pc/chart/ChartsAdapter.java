@@ -1,15 +1,11 @@
 package com.example.user_pc.chart;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -17,18 +13,18 @@ import java.util.List;
  * Created by USER-PC on 24.08.2016.
  */
 public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder> {
+    private static ClickListener clickListener;
 
     private List<Chart> charts;
     private Context context;
 
-    ChartsAdapter(Context context, List<Chart> charts){
+    ChartsAdapter(Context context, List<Chart> charts) {
         this.charts = charts;
         this.context = context;
     }
 
 
-
-    private Context getContext(){
+    private Context getContext() {
         return context;
     }
 
@@ -45,19 +41,18 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position)  {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Chart chart = charts.get(position);
-
 
         View mView = holder.mViewColumnWhite;
 
-        if(position <= 8){
+        if (position <= 8) {
             mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
                     RecyclerView.LayoutParams.WRAP_CONTENT, 0));
             mView.setClickable(false);
-        }else{
-        mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
-                RecyclerView.LayoutParams.WRAP_CONTENT, chart.getValue()));
+        } else {
+            mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
+                    RecyclerView.LayoutParams.WRAP_CONTENT, chart.getValue()));
         }
     }
 
@@ -67,13 +62,30 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
     }
 
 
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
         public View mViewColumnWhite;
-        public LinearLayout mLinearLayout;
-        public ViewHolder(View itemView){
+        public LinearLayout mListLayout;
+
+        public ViewHolder(final View itemView) {
             super(itemView);
-            mViewColumnWhite =  itemView.findViewById(R.id.columnWhite);
+            mViewColumnWhite = itemView.findViewById(R.id.columnWhite);
+            mListLayout = (LinearLayout) itemView.findViewById(R.id.linerLayotItemColumn);
+
+            mListLayout.setOnClickListener(this);
         }
+        @Override
+        public void onClick(View v){
+            clickListener.onItemClick(v,getAdapterPosition());
+        }
+
+    }
+
+    public void setOnClickListener(ClickListener clickListener){
+        ChartsAdapter.clickListener = clickListener;
+    }
+
+    public interface ClickListener{
+        void onItemClick(View v, int position);
     }
 }
