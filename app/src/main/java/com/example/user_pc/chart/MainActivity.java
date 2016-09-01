@@ -4,14 +4,18 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.graphics.Canvas;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.sax.StartElementListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Chart> charts;
     private final static int MAX_RANDOM_VALUE = 1000;
     private final static int COLUMN = 20000;
-    private final static int COLUMN_WIDTH = 20;
+    private final static int COLUMN_WIDTH_DP = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
         rvCharts.setHasFixedSize(true);
 
+
         charts = Chart.createChartList(COLUMN, MAX_RANDOM_VALUE);
 
         mTextView = (TextView) findViewById(R.id.textView);
 
-        ChartsAdapter adapter = new ChartsAdapter(this, charts);
+        ChartsAdapter adapter = new ChartsAdapter(this, charts, midPosition());
 
         rvCharts.setAdapter(adapter);
         rvCharts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -56,6 +61,13 @@ public class MainActivity extends AppCompatActivity {
         clickOfColumn(adapter);
     }
 
+    public int midPosition()
+    {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics metricsB = new DisplayMetrics();
+        display.getMetrics(metricsB);
+        return (int) ((metricsB.widthPixels / Resources.getSystem().getDisplayMetrics().density)/(COLUMN_WIDTH_DP * 2));
+    }
 
     public void setFirstValue() {
         rvCharts.post(new Runnable() {
@@ -66,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     public void scrollingChart() {
         rvCharts.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -79,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                                     findFirstVisibleItemPosition()).
                             getX();
 
-                    if (valueX <= -COLUMN_WIDTH || valueX == 0) {
+                    if (valueX <= -COLUMN_WIDTH_DP || valueX == 0) {
                         visibleItem = getLastVisibliPosition();
                     } else {
                         visibleItem = getFirstVisibliPosition();
