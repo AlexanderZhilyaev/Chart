@@ -30,10 +30,13 @@ public class MainActivity extends AppCompatActivity {
     public TextView mTextView;
     public RecyclerView rvCharts;
     public View greyColumn;
+    private RecyclerView.ItemDecoration mStartOffsetDecoration;
+    private RecyclerView.ItemDecoration mEndOffsetDecoration;
     ArrayList<Chart> charts;
     private final static int MAX_RANDOM_VALUE = 1000;
     private final static int COLUMN = 20000;
     private final static int COLUMN_WIDTH_DP = 20;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         mTextView = (TextView) findViewById(R.id.textView);
 
-        ChartsAdapter adapter = new ChartsAdapter(this, charts, midPosition());
+        ChartsAdapter adapter = new ChartsAdapter(this, charts);
 
         rvCharts.setAdapter(adapter);
         rvCharts.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -59,21 +62,25 @@ public class MainActivity extends AppCompatActivity {
 
         scrollingChart();
         clickOfColumn(adapter);
+
+        mEndOffsetDecoration = new EndOffsetItemDecoration(midPosition());
+        mStartOffsetDecoration = new StartOffsetItemDecoration(midPosition());
+        rvCharts.addItemDecoration(mStartOffsetDecoration);
+        rvCharts.addItemDecoration(mEndOffsetDecoration);
     }
 
-    public int midPosition()
-    {
+    public int midPosition() {
         Display display = getWindowManager().getDefaultDisplay();
         DisplayMetrics metricsB = new DisplayMetrics();
         display.getMetrics(metricsB);
-        return (int) ((metricsB.widthPixels / Resources.getSystem().getDisplayMetrics().density)/(COLUMN_WIDTH_DP * 2));
+        return (int) (metricsB.widthPixels / Resources.getSystem().getDisplayMetrics().density);
     }
 
     public void setFirstValue() {
         rvCharts.post(new Runnable() {
             @Override
             public void run() {
-                Chart chart = charts.get(getMidPositionVisible());
+                Chart chart = charts.get(0);
                 mTextView.setText(String.valueOf(chart.getValue()));
             }
         });
@@ -89,15 +96,21 @@ public class MainActivity extends AppCompatActivity {
                             findViewByPosition(((LinearLayoutManager) rvCharts.getLayoutManager()).
                                     findFirstVisibleItemPosition()).
                             getX();
+                    int numberColumn = midPosition() / COLUMN_WIDTH_DP;
 
-                    if (valueX <= -COLUMN_WIDTH_DP || valueX == 0) {
-                        visibleItem = getLastVisibliPosition();
+                    int numberColumnbVisible = (getLastVisiblePosition() - getFirstVisiblePosition()) + 1;
+
+                    if (numberColumn == numberColumnbVisible || numberColumn < numberColumnbVisible) {
+                        if (valueX <= -COLUMN_WIDTH_DP || valueX == 0) {
+                            visibleItem = getLastVisiblePosition();
+                        } else {
+                            visibleItem = getFirstVisiblePosition();
+                        }
                     } else {
-                        visibleItem = getFirstVisibliPosition();
+                        visibleItem = getLastVisiblePosition();
                     }
 
                     rvCharts.smoothScrollToPosition(visibleItem);
-
 
                     Chart chart = charts.get(getNextMidPositionVisible());
                     mTextView.setText(String.valueOf(chart.getValue()));
@@ -112,39 +125,29 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(View v, int position) {
                 Chart chart = charts.get(position);
 
-                int shift = position - getNextMidPositionVisible();
+                int shiftScrollPositionPX = (int) v.getX() - midPosition();
 
+                rvCharts.scrollBy(shiftScrollPositionPX, 0);
 
-                if (position > getMidPositionVisible() - 1) {
-                    mTextView.setText(String.valueOf(chart.getValue()));
-
-                    if (getNextMidPositionVisible() > position) {
-                        int nextPosition = getFirstVisibliPosition() + shift;
-                        rvCharts.smoothScrollToPosition(nextPosition);
-                    } else {
-                        int nextPosition = getLastVisibliPosition() + shift;
-                        rvCharts.smoothScrollToPosition(nextPosition);
-                    }
-                }
+                mTextView.setText(String.valueOf(chart.getValue()));
             }
 
         });
     }
 
-    public int getFirstVisibliPosition() {
+    public int getFirstVisiblePosition() {
         return ((LinearLayoutManager) rvCharts.getLayoutManager()).findFirstVisibleItemPosition();
     }
 
-    public int getLastVisibliPosition() {
+    public int getLastVisiblePosition() {
         return ((LinearLayoutManager) rvCharts.getLayoutManager()).findLastVisibleItemPosition();
     }
 
     public int getMidPositionVisible() {
-        return 1 + (getLastVisibliPosition() - getFirstVisibliPosition()) / 2;
+        return 1 + (getLastVisiblePosition() - getFirstVisiblePosition()) / 2;
     }
 
     public int getNextMidPositionVisible() {
-        return getMidPositionVisible() + getFirstVisibliPosition();
+        return getMidPositionVisible() + getFirstVisiblePosition();
     }
 }
-

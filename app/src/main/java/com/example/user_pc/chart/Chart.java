@@ -20,7 +20,7 @@ public class Chart {
     public static ArrayList<Chart> createChartList(int numColumn, int maxValue){
         ArrayList<Chart> charts = new ArrayList<Chart>();
         Random random = new Random();
-        for(int i = 0; i < numColumn + 8; i++){
+        for(int i = 0; i < numColumn; i++){
             charts.add(new Chart(random.nextInt(maxValue + 1)));
         }
         return charts;

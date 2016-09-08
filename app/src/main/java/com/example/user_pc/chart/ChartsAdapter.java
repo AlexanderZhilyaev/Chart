@@ -17,13 +17,11 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
 
     private List<Chart> charts;
     private Context context;
-    private int midPosition;
 
 
-    ChartsAdapter(Context context, List<Chart> charts, int midPosition) {
+    ChartsAdapter(Context context, List<Chart> charts) {
         this.charts = charts;
         this.context = context;
-        this.midPosition = midPosition;
     }
 
 
@@ -49,14 +47,14 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
 
         View mView = holder.mViewColumnWhite;
 
-        if (position <= midPosition - 1) {
-            mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
-                    RecyclerView.LayoutParams.WRAP_CONTENT, 0));
-            mView.setClickable(false);
-        } else {
+//        if (position <= midPosition - 1) {
+//            mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
+//                    RecyclerView.LayoutParams.WRAP_CONTENT, 0));
+//            mView.setClickable(false);
+//        } else {
             mView.setLayoutParams(new LinearLayout.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT,
                     RecyclerView.LayoutParams.WRAP_CONTENT, chart.getValue()));
-        }
+//        }
     }
 
     @Override
