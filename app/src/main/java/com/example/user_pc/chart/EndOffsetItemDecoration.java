@@ -21,14 +21,6 @@ public class EndOffsetItemDecoration extends RecyclerView.ItemDecoration {
     private int mOffsetPx;
     private Drawable mOffsetDrawable;
     private int mOrientation;
-
-    /**
-     * Constructor that takes in the size of the offset to be added to the end
-     * of the RecyclerView.
-     *
-     * @param offsetPx The size of the offset to be added to the end of the
-     *                 RecyclerView in pixels
-     */
     public EndOffsetItemDecoration(int offsetPx) {
         mOffsetPx = offsetPx;
     }

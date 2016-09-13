@@ -1,28 +1,18 @@
 package com.example.user_pc.chart;
 
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
-import android.graphics.Canvas;
-import android.os.Build;
-import android.provider.ContactsContract;
-import android.sax.StartElementListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -89,37 +79,33 @@ public class MainActivity extends AppCompatActivity {
     public void scrollingChart() {
         rvCharts.addOnScrollListener(new RecyclerView.OnScrollListener() {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                int visibleItem = 0;
+                int shiftScrollPX = 0;
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-
                     float valueX = recyclerView.getLayoutManager().
                             findViewByPosition(((LinearLayoutManager) rvCharts.getLayoutManager()).
-                                    findFirstVisibleItemPosition()).
-                            getX();
-                    int numberColumn = midPosition() / COLUMN_WIDTH_DP;
+                                    findLastVisibleItemPosition()).
+                            getX() - rvCharts.getWidth();
 
-                    int numberColumnbVisible = (getLastVisiblePosition() - getFirstVisiblePosition()) + 1;
 
-                    if (numberColumn == numberColumnbVisible || numberColumn < numberColumnbVisible) {
-                        if (valueX <= -COLUMN_WIDTH_DP || valueX == 0) {
-                            visibleItem = getLastVisiblePosition();
+                    if (valueX != -COLUMN_WIDTH_DP * 2) {
+                        if (valueX <= -COLUMN_WIDTH_DP) {
+                            shiftScrollPX = (int) (valueX + COLUMN_WIDTH_DP * 2);
                         } else {
-                            visibleItem = getFirstVisiblePosition();
+                            shiftScrollPX = (int) valueX;
                         }
-                    } else {
-                        visibleItem = getLastVisiblePosition();
                     }
 
-                    rvCharts.smoothScrollToPosition(visibleItem);
+                    rvCharts.scrollBy(shiftScrollPX, 0);
 
                     Chart chart = charts.get(getNextMidPositionVisible());
                     mTextView.setText(String.valueOf(chart.getValue()));
+
                 }
             }
         });
     }
 
-    public void clickOfColumn(ChartsAdapter adapter) {
+    public void clickOfColumn(final ChartsAdapter adapter) {
         adapter.setOnClickListener(new ChartsAdapter.ClickListener() {
             @Override
             public void onItemClick(View v, int position) {
@@ -127,11 +113,10 @@ public class MainActivity extends AppCompatActivity {
 
                 int shiftScrollPositionPX = (int) v.getX() - midPosition();
 
-                rvCharts.scrollBy(shiftScrollPositionPX, 0);
+                rvCharts.smoothScrollBy(shiftScrollPositionPX, 0);
 
                 mTextView.setText(String.valueOf(chart.getValue()));
             }
-
         });
     }
 

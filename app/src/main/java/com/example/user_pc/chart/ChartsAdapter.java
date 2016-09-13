@@ -63,6 +63,7 @@ public class ChartsAdapter extends RecyclerView.Adapter<ChartsAdapter.ViewHolder
     }
 
 
+
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public View mViewColumnWhite;
